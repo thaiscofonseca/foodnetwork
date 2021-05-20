@@ -1,0 +1,355 @@
+####################################################################
+############ this function creates the food network ################
+####################################################################
+
+require("bnlearn")
+require("graphviz")
+require("visNetwork")
+
+names.food = c("Food security","Household income","Food costs","SocioEconomic status",
+               "Access to credit",
+               "Costs of living","Housing costs","Food availability","Energy costs",
+               "Household geodemography","Food production",
+               "Food import and export","Economic context","Supply Chain Disruption")
+
+dag.food = model2network("[Food security|Household income:Food costs][Household income|Access to credit:SocioEconomic status][Household income|Costs of living][Access to credit][Costs of living|Housing costs:Energy costs:Food costs:Household geodemography][Housing costs|Household geodemography][Energy costs|Economic context][Food costs|Food availability:Energy costs][Food import and export|Economic context][Food availability|Food production:Food import and export][Food production|Economic context:Supply Chain Disruption][Economic context][Household geodemography][Supply Chain Disruption][SocioEconomic status|Economic context]",ordering=names.food)
+
+graphviz.plot(dag.food, highlight = list(nodes=c("Food security"),fill="lightblue"), layout = "dot",
+              shape = "ellipse", main = NULL, sub = NULL, render = TRUE)
+
+####################################################################
+################## datasets used in the analysis ###################
+####################################################################
+
+Nutrition = c(2702, 3161, 3773, 4657, 5377, 5499, 6653, 7348, 7855, 8417, 9006)
+SizeUK = c(61823800, 62260500, 62759500, 63285100, 63705000, 64105700, 64596800, 65110000, 65648100, 66040200, 66435600)
+Health = Nutrition/SizeUK 
+
+Education = c(0.1947, 0.2059 ,0.2222 ,0.2392 ,0.2532, 0.2696, 0.2694, 0.2733, 0.2772, 0.2719, 0.2695)
+
+Income = c(19199, 19578, 19416, 18739, 18968, 19091, 19283, 20069, 19860, 19655, 19921)
+Expendure = c(15916, 15406, 15666, 16002, 16518, 17127, 17684, 18107, 18816, 19467, 19467)
+HIncome = Income - Expendure 
+
+CBreadCereal = c(85.6, 89.7, 91.6, 97.5, 99.6, 103.5, 102.9, 100, 98.4, 101, 102.1)
+CMeat = c(84, 89.5, 90.3, 95.2, 98.8, 102.6, 103.2, 100, 95.9, 97.6, 98.5)
+CFish = c(78.3, 81.2, 86.5, 94.5, 97.9, 101.1, 103.6, 100, 97.7, 106.3, 110.3)
+CMilkeEggs = c(95.3, 99.3, 99.5, 102.1, 103.1, 104.1, 104.7, 100, 96.6, 98.5, 100.9)
+COilFat = c(83.9, 84, 89.6, 100.2, 102.6, 105.5, 104.9, 100, 99.4, 105.5, 111.7)
+CFruit = c(77.1, 80.8, 87.1, 90.4, 92, 99.9, 100.2, 100, 101.1, 103.8, 106.7)
+CVegetables = c(88.1, 93.7, 96.4, 99.6, 102.9, 109.3, 104.1, 100, 95.9, 97.9, 99.8)
+CBeverage = c(79.5, 83, 88.1, 95.8, 99.6, 101.1, 101.3, 100, 98.1, 98.2, 102)
+CFood = CBreadCereal + CMeat + CFish + 2 CMilkEggs + COilFat + CFruit + CVegetables + CBeverage
+
+Lending = c(2.4, 5.7, 6, 4.2, 4, 3, 3.3, 3.8, 1.6, 0.2, 0.6)
+Tax = c(8.163, 6.816, 5.909, 5.783, 5.529, 5.268, 5.893, 6.045, 6.654, 6.653, 7.282)
+Unemployment = c(6.2, 8.6, 8.7, 8.7, 8.4, 8.1, 6.4, 5.6, 5, 4.5, 4.1)
+
+GDP = c(1589931, 1547562, 1601925, 1659785, 1712320, 1782109, 1861965, 1916896, 1995478, 2071667, 2140278)
+Benefits0 = c(75588, 84386, 89495, 91503, 93466, 93270, 93699, 94259, 93829, 93905, 96058)
+Benefits = Benefits0/Gdp
+
+CHousing = c(80.1, 83.5, 83.8, 88.4, 92.8, 96.6, 99.5, 100, 100.2, 102, 104.4)
+CRecreation = c(95.4, 96.6, 98.4, 98.5, 98.7, 99.7, 100.6, 100, 100.4, 102.4, 105.4)
+CTransport = c(83.7, 84.4, 91.5, 98.6, 100.9, 101.9, 102.2, 100, 100.5, 105.1, 109.8)
+CLiving = CHousing + CFood + CRecreation + CTransport
+
+FImportsEU = c(95, 100.3, 100, 105.9, 106.2, 109.4, 106.8, 101.3, 103.5, 113.6, 112.8)
+FImportsNEU = c(89.4, 98.7, 100, 108, 116.5, 124.2, 120.5, 115.5, 116.6, 124.5, 132)
+FImports = FImportsEU + FImportsNEU
+
+COil = c(98.6, 89.6, 105.3, 121.3, 123.7, 122.5, 116, 100, 97.4, 106, 113.9)
+CEnergy = c(83.6, 83.7, 88.8, 99.7, 104.6, 108.1, 108.3, 100, 97.5, 103.4, 110.5)
+PartTime = c(198, 187, 167, 185, 185, 188, 187, 221, 250, 259, 263)
+Frost = c(52.8, 53.9, 89.5, 38.3, 51.2, 66.2, 29.4, 40.5, 49.9, 45.2, 50.6)
+
+####################################################################
+################## dynamical model functions #######################
+####################################################################
+
+myfilter = function(m0,C0,y,V,Ft,discount,discount2){
+  
+  N = length(y) 
+  p = length(m0)
+  resultado.m = matrix(NA,N,p)
+  resultado.C = array(NA,c(N,p,p))
+  resultado.f = matrix(NA,N,1)
+  St = NA
+  
+  ### step 1
+
+  ## for phit
+  dt = d0
+  nt = n0
+  S0 = d0/n0
+  Vt = S0*V
+
+  at = m0
+  W = C0*(1 - discount) / discount   ## n x n
+  Rt = C0 + W
+  ft = t(Ft[,1])%*%at
+  Qt = t(Ft[,1])%*%Rt%*%Ft[,1] + S0
+  et = y[1]-ft
+  At = Rt%*%Ft[,1]/as.vector(Qt)
+
+  ## for phit
+  nt = discount2*n0 + 1
+  dt = discount2*d0 + S0*et%*%et/as.vector(Qt)
+  St[1] =  dt/nt
+
+  mt = at + At%*%et
+  Ct = (St[1]/S0)*(Rt-At%*%t(At)*as.vector(Qt))
+
+  resultado.m[1,] = mt
+  resultado.C[1,,] = Ct
+  resultado.f[1,] = ft
+  
+  ### step 2 (updating)
+  for (j in 2:N){
+    
+    at = mt
+    W = Ct*(1 - discount) / discount   ## n x n
+    Rt = Ct + W
+    ft = t(Ft[,j])%*%at
+    Qt = t(Ft[,j])%*%Rt%*%Ft[,j] + St[j-1]
+    et = y[j]-ft
+    At = Rt%*%Ft[,j]/as.vector(Qt)
+    
+    ## for phit
+    nt = discount2*nt + 1
+    dt = discount2*dt + St[j-1]*et%*%et/as.vector(Qt)
+    St[j] =  dt/nt
+
+    mt = at + At%*%et
+    Ct = (St[j]/St[j-1])*(Rt-At%*%t(At)*as.vector(Qt))
+
+    resultado.m[j,] = mt
+    resultado.C[j,,] = Ct
+    resultado.f[j,] = ft
+  }
+
+  list(m=resultado.m,C=resultado.C,f=resultado.f,Vt=St*V,n1=nt,d1=dt)
+  
+}
+
+mysmoother = function(y,res.filtro,discount){
+  m = res.filtro[[1]]
+  C = res.filtro[[2]]
+  n = length(y)
+  p = length(m[1,])
+  m1 = 0*m
+  C1 = 0*C
+  m1[n,] = m[n,] 
+  C1[n,,] = C[n,,] 
+  for (t in (n-1):1){
+    at1 = m[t,]
+    Rt1 =C[t,,]/discount
+    B = diag(rep(1,p))*discount
+    m1[t,] = m[t,]+B%*%(m1[t+1,]-at1)
+    C1[t,,] = C[t,,]-B%*%(Rt1-C1[t+1,,])%*%t(B)   
+    
+  }
+  return(list(m=m1,C=C1))
+}
+
+simulate.y =  function(result.s,result.f,size,Ft){
+  nT = length(result.s$m[,1])
+  np = length(result.s$m[1,])
+  y.simulate = matrix(0,size,nt)
+  loglike = matrix(0,size,nT)
+  for (i in 1:size){
+    for (j in 1:nT){
+    if (np==1){
+      th.simulate = as.vector(rnorm(1,result.s$m[j,],sqrt(result.s$C[j,,])))
+    } else{
+       th.simulate = as.vector(rmvnorm(1,result.s$m[j,],result.s$C[j,,]))
+    }
+    phi.simulate = rgamma(1,result.f$n1/2,result.f$d1/2)
+    erro = rnorm(1,0,sqrt(1/phi.simulate))
+    y.simulate[i,j] = t(Ft[,j])%*%th.simulate + erro 
+    loglike[i,j] = loglike[i,j] + dnorm(y.simulate[i,j],t(Ft[,j])%*%th.simulate,sqrt(1/phi.simulate),log=T) 
+    }}
+  list(y.simulate,apply(loglike,1,sum))
+}
+
+
+grid.discount = function(discount.vec,discount2.vec,c0.vec,data.food,size){
+
+  result.s = NULL
+  result.f = NULL
+  result.y = NULL
+  result.loglike = 0
+  result.pred = NULL
+
+p = dim(data.food)[2]
+
+for (i in 1:p){
+  
+  if ((i==1)|(i==2)|(i==17)){var.z = log(data.food[,i])}else{var.z = data.food[,i]}
+  nt = dim(data.food)[1]
+  
+  if (sum(Parent.matrix[i,]==1)==0){var.X = as.matrix(rep(1,nt))}else{
+    var.X = cbind(rep(1,nt),data.food[,Parent.matrix[i,]==1])
+  }
+  discount = discount.vec[i]
+  discount2 = discount2.vec[i]
+  dates = 2008:2018
+  
+  z = matrix(var.z,nt,1)
+  Ft =  t(var.X) 
+  
+  m0 = rep(0,dim(Ft)[1])
+  c0.scale = as.vector(diag(solve(Ft%*%t(Ft))))
+  if (dim(Ft)[1]==1){C0 = matrix(c0.scale,1,1) }else{C0 = c0.vec[i]*diag(c0.scale)}
+  d0 = n0 = 0.01
+  
+  filtro2 = myfilter(m0,C0,z,1,Ft,discount,discount2)
+  suave1 = mysmoother(z,filtro2,discount)
+  
+  result.s[[i]] = list(m=suave1$m,C=suave1$C)
+  result.f[[i]] = list(Vt=filtro2$Vt,n1=filtro2$n1,d1=filtro2$d1)
+  result.pred = simulate.y(result.s[[i]],result.f[[i]],size,Ft)
+  result.y[[i]] = result.pred[[1]]
+  result.loglike = result.loglike + result.pred[[2]]
+ }
+ return(result.loglike)
+ }
+ 
+####### shifted-gamma estimator for p(y)
+shifted.gamma = function(logl.th1,logl.th0,d1,d0,lamb){
+  l.bar1 = mean(logl.th1)
+  s2.1 = var(logl.th1)
+  l.bar0 = mean(logl.th0)
+  s2.0 = var(logl.th0)
+  l1.hat = max(l.bar1,logl.th1)
+  l0.hat = max(l.bar0,logl.th0)
+  alpha.1 = d1/2
+  alpha.0 = d0/2
+  logpy1 = l1.hat+alpha.1*log(1-lamb)
+  logpy0 = l0.hat+alpha.0*log(1-lamb)
+  (logpy1-logpy0)
+}
+
+
+####################################################################
+######### data organization and topology of network ################
+####################################################################
+
+## data 1 : original
+data.food = cbind(Health,Education,HIncome,CFood,Lending,Tax,MUnimployment,
+                  CLiving,CHousing,FProduction,COil,Disable,Frost,Gdp,FImports,CEnergy,Benefits)
+
+names.food = c("Food Security (H)","Food Security (E)","HIncome","CFood","Lending","Tax","MUnimployment","CLiving","CHousing","FProduction",
+               "COil","Disable","Frost","Gdp","FImports","CEnergy","Benefits")
+
+dim.data = dim(data.food) #time x variables
+p = dim.data[2]
+
+Parent.matrix =  matrix(c(0,0,1,1,rep(0,11),0,0,
+                          0,0,1,1,rep(0,11),0,0,
+                          0,0,0,0,1,1,0,1,rep(0,7),0,1,
+                          rep(0,9),1,rep(0,2),0,0,1,1,0,
+                          rep(0,6),1,rep(0,8),0,0,
+                          rep(0,6),1,rep(0,8),0,0,
+                          rep(0,11),1,0,1,0,0,0,
+                          0,0,0,1,rep(0,4),1,0,0,rep(0,4),0,0,
+                          rep(0,15),1,0,
+                          rep(0,12),1,0,1,0,0,
+                          rep(0,12),0,1,0,0,0,
+                          rep(0,15),0,0,
+                          rep(0,15),0,0,
+                          rep(0,15),0,0,
+                          rep(0,13),1,0,0,0,
+                          rep(0,10),1,0,0,1,0,0,0,
+                          rep(0,6),1,rep(0,10)
+                          ),byrow=T,p,p)
+
+for (i in 1:p){print(names.food[Parent.matrix[i,]==1])}
+
+####################################################################
+############### grid search for discount factors ###################
+####################################################################
+
+require(mvtnorm)
+
+size = 100
+c0.vec = rep(10,17)
+scenario.discount = matrix(NA,size,12)
+discount.vec = discount2.vec = NULL; 
+
+discount.vec[[1]] = rep(0.85,17); discount2.vec[[1]] = rep(0.9,17);
+discount.vec[[2]] = rep(0.9,17); discount2.vec[[2]] = rep(0.9,17);
+discount.vec[[3]] = rep(0.95,17); discount2.vec[[3]] = rep(0.9,17);
+discount.vec[[4]] = rep(0.99,17); discount2.vec[[4]] = rep(0.9,17);
+
+discount.vec[[5]] = rep(0.85,17); discount2.vec[[5]] = rep(0.95,17);
+discount.vec[[6]] = rep(0.9,17); discount2.vec[[6]] = rep(0.95,17);
+discount.vec[[7]] = rep(0.95,17); discount2.vec[[7]] = rep(0.95,17);
+discount.vec[[8]] = rep(0.99,17); discount2.vec[[8]] = rep(0.95,17);
+
+discount.vec[[9]] = rep(0.85,17); discount2.vec[[9]] = rep(0.99,17);
+discount.vec[[10]] = rep(0.9,17); discount2.vec[[10]] = rep(0.99,17);
+discount.vec[[11]] = rep(0.95,17); discount2.vec[[11]] = rep(0.99,17);
+discount.vec[[12]] = rep(0.99,17); discount2.vec[[12]] = rep(0.99,17);
+
+for (i in 1:12){
+  scenario.discount[,i] = grid.discount(discount.vec[[i]],discount2.vec[[i]],c0.vec,data.food,size)
+}
+
+apply(scenario.discount,2,mean)
+
+logBF = NA
+for (i in 1:12){
+  logBF[i] = shifted.gamma(scenario.discount[,i],scenario.discount[,12],2,2,.98)
+}
+matrix(round(2*(logBF),2),4,3,byrow=F)
+
+####################################################################
+################### running the MDLM analysis ######################
+####################################################################
+
+result.s = NULL
+result.f = NULL
+result.y = NULL
+require(mvtnorm)
+
+size = 100
+discount.vec = rep(0.85,17)
+discount2.vec = rep(0.9,17)
+c0.vec = rep(10,17)
+
+
+for (i in 1:p){
+  
+  if ((i==1)|(i==2)|(i==17)){var.z = log(data.food[,i])}else{var.z = data.food[,i]}
+  nt = dim(data.food)[1]
+  
+  if (sum(Parent.matrix[i,]==1)==0){var.X = as.matrix(rep(1,nt))}else{
+    var.X = cbind(rep(1,nt),data.food[,Parent.matrix[i,]==1])
+  }
+  discount = discount.vec[i]
+  discount2 = discount2.vec[i]
+  dates = 2008:2018
+
+  z = matrix(var.z,nt,1)
+  Ft =  t(var.X) 
+
+  m0 = rep(0,dim(Ft)[1]) #### prior
+  c0.scale = as.vector(diag(solve(Ft%*%t(Ft)))) #### prior
+  if (dim(Ft)[1]==1){C0 = matrix(c0.scale,1,1) }else{C0 = c0.vec[i]*diag(c0.scale)} #### prior
+  d0 = n0 = 0.01 ### prior
+  
+  filtro2 = myfilter(m0,C0,z,1,Ft)
+  suave1 = mysmoother(z,filtro2)
+
+  result.s[[i]] = list(m=suave1$m,C=suave1$C)
+  result.f[[i]] = list(Vt=filtro2$Vt,n1=filtro2$n1,d1=filtro2$d1)
+  result.y[[i]] = simulate.y(result.s[[i]],result.f[[i]],size,Ft)[[1]]
+  
+}
+
+
+
+
+
+
