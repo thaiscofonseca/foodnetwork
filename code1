@@ -273,7 +273,7 @@ for (i in 1:p){print(names.food[Parent.matrix[i,]==1])}
 require(mvtnorm)
 
 size = 100
-c0.vec = rep(10,17)
+c0.vec = rep(100,17)
 scenario.discount = matrix(NA,size,12)
 discount.vec = discount2.vec = NULL; 
 
@@ -316,7 +316,7 @@ require(mvtnorm)
 size = 100
 discount.vec = rep(0.85,17)
 discount2.vec = rep(0.9,17)
-c0.vec = rep(10,17)
+c0.vec = rep(100,17)
 
 
 for (i in 1:p){
