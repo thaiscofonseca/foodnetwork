@@ -339,8 +339,8 @@ for (i in 1:p){
   if (dim(Ft)[1]==1){C0 = matrix(c0.scale,1,1) }else{C0 = c0.vec[i]*diag(c0.scale)} #### prior
   d0 = n0 = 0.01 ### prior
   
-  filtro2 = myfilter(m0,C0,z,1,Ft)
-  suave1 = mysmoother(z,filtro2)
+  filtro2 = myfilter(m0,C0,z,1,Ft,discount.vec,discount2.vec)
+  suave1 = mysmoother(z,filtro2,discount.vec)
 
   result.s[[i]] = list(m=suave1$m,C=suave1$C)
   result.f[[i]] = list(Vt=filtro2$Vt,n1=filtro2$n1,d1=filtro2$d1)
