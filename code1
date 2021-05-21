@@ -242,9 +242,9 @@ simulate.data = function(vec.order,M,nt,p,Parent.matrix,result.s,result.f,data.f
       var.X = data.foodNew[,Parent.matrix[ind0,]==1]
       Ft =  t(cbind(rep(1,nt), var.X)) 
       if ((ind0==1)|(ind0==2)|(ind0==17)){
-        data.foodS[indM,,ind0] = exp(simulate.y(result.s[[ind0]],result.f[[ind0]],1,Ft,v1)[[1]])
+        data.foodS[indM,,ind0] = exp(simulate.y(result.s[[ind0]],result.f[[ind0]],1,Ft)[[1]])
       } else{
-        data.foodS[indM,,ind0] = simulate.y(result.s[[ind0]],result.f[[ind0]],1,Ft,v1)[[1]]
+        data.foodS[indM,,ind0] = simulate.y(result.s[[ind0]],result.f[[ind0]],1,Ft)[[1]]
       }
     }
   }
