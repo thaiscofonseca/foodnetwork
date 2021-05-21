@@ -172,6 +172,9 @@ simulate.y =  function(result.s,result.f,size,Ft){
   list(y.simulate,apply(loglike,1,sum))
 }
 
+####################################################################
+##################### model comparison #############################
+####################################################################
 
 grid.discount = function(discount.vec,discount2.vec,c0.vec,data.food,size){
 
@@ -215,7 +218,6 @@ for (i in 1:p){
  return(result.loglike)
  }
  
-####### shifted-gamma estimator for p(y)
 shifted.gamma = function(logl.th1,logl.th0,d1,d0,lamb){
   l.bar1 = mean(logl.th1)
   s2.1 = var(logl.th1)
@@ -229,6 +231,28 @@ shifted.gamma = function(logl.th1,logl.th0,d1,d0,lamb){
   logpy0 = l0.hat+alpha.0*log(1-lamb)
   (logpy1-logpy0)
 }
+####################################################################
+################## utility computation #############################
+####################################################################
+
+simulate.data = function(vec.order,M,nt,p,Parent.matrix,result.s,result.f,data.foodNew){
+  data.foodS = array(NA,c(M,nt,p))
+  for (indM in 1:M){    
+    for (ind0 in vec.order){
+      var.X = data.foodNew[,Parent.matrix[ind0,]==1]
+      Ft =  t(cbind(rep(1,nt), var.X)) 
+      if ((ind0==1)|(ind0==2)|(ind0==17)){
+        data.foodS[indM,,ind0] = exp(simulate.y(result.s[[ind0]],result.f[[ind0]],1,Ft,v1)[[1]])
+      } else{
+        data.foodS[indM,,ind0] = simulate.y(result.s[[ind0]],result.f[[ind0]],1,Ft,v1)[[1]]
+      }
+    }
+  }
+  data.foodS
+}
+
+u = function(y){ 1-exp(-y) } ### 1 is bad, 0 is good
+
 
 
 ####################################################################
@@ -348,6 +372,17 @@ for (i in 1:p){
   
 }
 
+data.foodNew = data.food ## policy 1
+
+vec.order = c(12,13,14,11,15,7,10,16,5,6,17,9,4,8,3,1,2)
+M = 100
+nt = 11
+p = length(vec.order)
+
+
+data.foodS = simulate.data(vec.order,M,nt,p,Parent.matrix,result.s,result.f,data.foodNew)
+u1 =  u(data.foodS[,,1])+u(data.foodS[,,2])
+apply(u1,2,mean)
 
 
 
